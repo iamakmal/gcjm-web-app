@@ -5,7 +5,7 @@ import { NextPage } from "next";
 const Home: NextPage = () => {
   return (
     <>
-      <div className="flex justify-center gap-5 mt-10">
+      <div className="flex justify-center gap-5 mt-10 flex-wrap p-5">
         <AnalyticsCard name="Today's Collection" amount={10000} />
         <AnalyticsCard name="Monthly Collection" amount={100000} />
       </div>
