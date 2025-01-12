@@ -46,7 +46,7 @@ const Area: NextPage = () => {
               ? Array.from({ length: 5 }).map((_, index) => (
                   <tr key={index}>
                     <td colSpan={5} className="text-center">
-                      <div className="skeleton h-10 w-full"></div>
+                      <div className="skeleton h-10 w-full rounded-none"></div>
                     </td>
                   </tr>
                 ))
@@ -56,7 +56,11 @@ const Area: NextPage = () => {
           </tbody>
         </table>
       </div>
-      <AddUser isModalOpen={isModalOpen} onClose={handleCloseModal} />
+      <AddUser
+        areaCode={areaData?.areaCode}
+        isModalOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 };

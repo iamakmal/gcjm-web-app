@@ -20,5 +20,5 @@ export interface UserType {
   contactNo: string;
   lastPayment?: number;
   lastPaymentDate?: string;
-  subscription: number;
+  subscription: string;
 }

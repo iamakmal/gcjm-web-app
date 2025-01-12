@@ -53,18 +53,19 @@ export const useGetUsersByArea = (areaId: string) => {
   });
 };
 
-export const createUser = async () => {
+export const createUser = async (user: UserType) => {
   const userCollection = collection(firestore, "users");
-  await addDoc(userCollection, newUser);
+  await addDoc(userCollection, user);
+  return user;
 };
 
 export const useCreateUser = (onSuccess: () => void, onError: () => void) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: () => createUser(),
+    mutationFn: (user: UserType) => createUser(user),
     onError,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user-area", "areaId"] });
+    onSuccess: (user: UserType) => {
+      queryClient.invalidateQueries({ queryKey: ["user-area", user.areaCode] });
       onSuccess();
     },
   });
