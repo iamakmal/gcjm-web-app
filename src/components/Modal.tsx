@@ -21,13 +21,6 @@ const Modal = ({ isOpen, onClose, title, children }: Props) => {
 
         {/* Modal Content */}
         <div className="py-4">{children}</div>
-
-        {/* Modal Footer */}
-        <div className="modal-action">
-          <button className="btn" onClick={onClose}>
-            Close
-          </button>
-        </div>
       </div>
     </div>
   );
