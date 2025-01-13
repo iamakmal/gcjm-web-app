@@ -1,8 +1,17 @@
 import { firestore } from "@/config/firebase";
-import { collection, getDocs, query, where, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  addDoc,
+  doc,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AreaType, UserType } from "@/types/types";
+import { AreaType, PaymentType, UserType } from "@/types/types";
 
 const getAreas = async () => {
   const areasCollection = collection(firestore, "areas");
@@ -64,9 +73,10 @@ const getUsersByArea = async (areaId: string) => {
   const userQuery = query(usersCollection, where("areaId", "==", areaId)); // Query for the `areaId`
   const snapshot = await getDocs(userQuery);
   return snapshot.docs
-  .map((doc) => ({ ...doc.data() } as UserType))
-  .sort((a, b) => a.refNo.localeCompare(b.refNo, undefined, { numeric: true }));
-  
+    .map((doc) => ({ ...doc.data() } as UserType))
+    .sort((a, b) =>
+      a.refNo.localeCompare(b.refNo, undefined, { numeric: true })
+    );
 };
 
 export const useGetUsersByArea = (areaId: string) => {
@@ -95,7 +105,25 @@ export const useCreateUser = (onSuccess: () => void, onError: () => void) => {
   });
 };
 
-export const editUser = async (userId: string, updatedData: Partial<UserType>) => {
+const getPaymentsOfUser = async (userId: string) => {
+  const paymentsCollection = collection(firestore, "payments");
+  const paymentQuery = query(paymentsCollection, where("userId", "==", userId));
+  const snapshot = await getDocs(paymentQuery);
+  return snapshot.docs.map((doc) => ({ ...doc.data() } as PaymentType));
+};
+
+export const useGetPaymentsOfUser = (userId: string) => {
+  return useQuery({
+    queryKey: ["user-payment", userId],
+    queryFn: () => getPaymentsOfUser(userId),
+    enabled: !!userId,
+  });
+};
+
+export const editUser = async (
+  userId: string,
+  updatedData: Partial<UserType>
+) => {
   const userDoc = doc(firestore, "users", userId);
   await updateDoc(userDoc, updatedData);
 };
@@ -112,8 +140,6 @@ export const useEditUser = (onSuccess: () => void, onError: () => void) => {
     },
   });
 };
-
-
 
 export const deleteUser = async (userId: string) => {
   const userDoc = doc(firestore, "users", userId);

@@ -1,25 +1,26 @@
 import { useDeleteUser, useEditUser } from "@/api/areaApi";
 import { UserType } from "@/types/types";
+import { useRouter } from "next/router";
 
 import React, { useState } from "react";
-
-
 
 interface Props {
   user: UserType;
 }
 
-
-const TableRow = ({ user }: { user: UserType }) => {
+const TableRow = ({ user }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editFormData, setEditFormData] = useState(user);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const router = useRouter();
 
-  const editUserMutation = useEditUser(() => setIsEditing(false), () =>
-    alert("Failed to update user")
+  const editUserMutation = useEditUser(
+    () => setIsEditing(false),
+    () => alert("Failed to update user")
   );
-  const deleteUserMutation = useDeleteUser(() => alert("User deleted"), () =>
-    alert("Failed to delete user")
+  const deleteUserMutation = useDeleteUser(
+    () => alert("User deleted"),
+    () => alert("Failed to delete user")
   );
 
   const handleEdit = () => setIsEditing(true);
@@ -47,7 +48,7 @@ const TableRow = ({ user }: { user: UserType }) => {
               name="refNo"
               value={editFormData.refNo}
               onChange={handleChange}
-              className="input input-bordered"
+              className="input input-bordered w-14"
             />
           </td>
           <td>
@@ -83,7 +84,7 @@ const TableRow = ({ user }: { user: UserType }) => {
               name="subscription"
               value={editFormData.subscription}
               onChange={handleChange}
-              className="input input-bordered"
+              className="input input-bordered w-28"
             />
           </td>
           <td>
@@ -95,7 +96,7 @@ const TableRow = ({ user }: { user: UserType }) => {
               className="input input-bordered"
             />
           </td>
-          <td>
+          <td className="flex flex-col gap-2">
             <button className="btn btn-primary btn-sm" onClick={handleSave}>
               Save
             </button>
@@ -110,7 +111,12 @@ const TableRow = ({ user }: { user: UserType }) => {
       ) : (
         <>
           <td>{user.refNo}</td>
-          <td>{user.name}</td>
+          <td
+            onClick={() => router.push(`/user/${user?.uid}`)}
+            className="cursor-pointer hover:font-bold hover:underline hover:underline-offset-2"
+          >
+            {user.name}
+          </td>
           <td>{user.NIC}</td>
           <td>{user.contactNo}</td>
           <td>{user.subscription}</td>
@@ -160,7 +166,6 @@ const TableRow = ({ user }: { user: UserType }) => {
           </div>
         </div>
       )}
-
     </tr>
   );
 };
