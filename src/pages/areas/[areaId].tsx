@@ -26,6 +26,7 @@ const Area: NextPage = () => {
 
   return (
     <div>
+
       <h1 className="text-2xl text-center font-semibold">
         Area {areaData?.name}
       </h1>

@@ -1,11 +1,14 @@
 import { useDeleteUser, useEditUser } from "@/api/areaApi";
 import { UserType } from "@/types/types";
+
 import React, { useState } from "react";
+
 
 
 interface Props {
   user: UserType;
 }
+
 
 const TableRow = ({ user }: { user: UserType }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -157,6 +160,7 @@ const TableRow = ({ user }: { user: UserType }) => {
           </div>
         </div>
       )}
+
     </tr>
   );
 };
