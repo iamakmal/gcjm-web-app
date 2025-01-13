@@ -23,17 +23,20 @@ const Area: NextPage = () => {
   };
   return (
     <div>
-      <div className="flex items-center justify-between px-4 py-2">
-        <GoBackButton />
-        <h1 className="text-2xl text-center font-semibold flex-grow">
+      <div className="flex items-center justify-between px-4 py-2 flex-wrap">
+        <div className="w-24">
+          <GoBackButton />
+        </div>
+        <h1 className="text-2xl font-semibold text-center flex-1">
           Area {areaData?.name}
         </h1>
+        <div>
+          <button className="btn" onClick={handleOpenModal}>
+            Add New User
+          </button>
+        </div>
       </div>
-      <div className="flex justify-end">
-        <button className="btn" onClick={handleOpenModal}>
-          Add New User
-        </button>
-      </div>
+
       <div className="px-10 mt-10 overflow-x-auto">
         <table className="table table-zebra">
           <thead className="text-lg">

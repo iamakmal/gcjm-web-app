@@ -2,7 +2,7 @@ import { firestore } from "@/config/firebase";
 import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AreaType, UserType } from "@/types/types";
+import { AreaType, PaymentType, UserType } from "@/types/types";
 
 const getAreas = async () => {
   const areasCollection = collection(firestore, "areas");
@@ -89,5 +89,20 @@ export const useCreateUser = (onSuccess: () => void, onError: () => void) => {
       queryClient.invalidateQueries({ queryKey: ["user-area", user.areaCode] });
       onSuccess();
     },
+  });
+};
+
+const getPaymentsOfUser = async (userId: string) => {
+  const paymentsCollection = collection(firestore, "payments");
+  const paymentQuery = query(paymentsCollection, where("userId", "==", userId));
+  const snapshot = await getDocs(paymentQuery);
+  return snapshot.docs.map((doc) => ({ ...doc.data() } as PaymentType));
+};
+
+export const useGetPaymentsOfUser = (userId: string) => {
+  return useQuery({
+    queryKey: ["user-payment", userId],
+    queryFn: () => getPaymentsOfUser(userId),
+    enabled: !!userId,
   });
 };

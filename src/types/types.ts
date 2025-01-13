@@ -22,3 +22,13 @@ export interface UserType {
   lastPaymentDate?: string;
   subscription: string;
 }
+
+export interface PaymentType {
+  userId: string;
+  areaId: string;
+  amount: string;
+  month: string[];
+  year: string;
+  paidAt: Timestamp;
+  status: string;
+}

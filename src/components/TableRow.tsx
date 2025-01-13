@@ -10,7 +10,12 @@ const TableRow = ({ user }: Props) => {
   const router = useRouter();
   return (
     <tr>
-      <td onClick={() => router.push(`/user/${user?.uid}`)}>{user.name}</td>
+      <td
+        onClick={() => router.push(`/user/${user?.uid}`)}
+        className="cursor-pointer hover:font-bold hover:underline hover:underline-offset-2"
+      >
+        {user.name}
+      </td>
       <td>{user.NIC}</td>
       <td>{user.contactNo}</td>
       <td>{user.subscription}</td>
