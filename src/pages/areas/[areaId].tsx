@@ -6,9 +6,11 @@ import { UserType } from "@/types/types";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline"; 
 
 const Area: NextPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
   const router = useRouter();
   const areaId = router.query.areaId;
   const { data: areaData } = useGetAreaById(areaId as string);
@@ -22,7 +24,17 @@ const Area: NextPage = () => {
     setIsModalOpen(false);
   };
 
-  const totalUsers = usersData?.length || 0; // Total number of users
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const filteredUsers = usersData?.filter((user: UserType) =>
+    [user.name, user.refNo, user.address].some((field) =>
+      field.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
+
+  const totalUsers = filteredUsers?.length || 0;
 
   return (
     <div>
@@ -31,7 +43,7 @@ const Area: NextPage = () => {
           <GoBackButton />
         </div>
         <h1 className="text-2xl font-semibold text-center flex-1">
-          Area {areaData?.name}
+          Area {areaData?.name} - {areaData?.areaCode}
         </h1>
       </div>
       <div className="flex justify-between items-center bg-white p-4 shadow-md rounded-lg border border-gray-200 m-4">
@@ -45,7 +57,16 @@ const Area: NextPage = () => {
           + Add New User
         </button>
       </div>
-
+      <div className="flex items-center bg-gray-100 rounded-lg p-2 shadow-md" style={{ margin: '1rem' }}>
+      <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 mr-2" />
+        <input
+          type="text"
+          placeholder="Search by Name, Ref No, or Address"
+          value={searchQuery}
+          onChange={handleSearch}
+          className="flex-grow bg-transparent outline-none text-gray-700 placeholder-gray-400"
+        />
+      </div>
       <div className="px-10 mt-10 overflow-x-auto">
         <table className="table table-zebra">
           <thead className="text-lg">
@@ -67,7 +88,7 @@ const Area: NextPage = () => {
                     </td>
                   </tr>
                 ))
-              : usersData?.map((user: UserType) => (
+              : filteredUsers?.map((user: UserType) => (
                   <TableRow key={user.uid} user={user} />
                 ))}
           </tbody>

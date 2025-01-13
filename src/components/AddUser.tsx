@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Modal from "./Modal";
 import { useFormik } from "formik";
-import { useCreateUser } from "@/api/areaApi";
+import { useCreateUser, useGetUsersByArea } from "@/api/areaApi";
 
 interface Props {
   isModalOpen: boolean;
@@ -21,6 +21,7 @@ interface FormValues {
 
 const AddUser = ({ isModalOpen, onClose, areaCode }: Props) => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const { data: usersData } = useGetUsersByArea(areaCode);
 
   useEffect(() => {
     if (toastMessage) {
@@ -37,7 +38,15 @@ const AddUser = ({ isModalOpen, onClose, areaCode }: Props) => {
     onClose();
   };
 
-  // Initial form values
+  const { mutate: createUser } = useCreateUser(showSuccessToast, showErrorToast);
+
+  const calculateNextRefNo = (): string => {
+    if (!usersData || usersData.length === 0) return "1"; // Start from 001 if no users exist
+    const refNos = usersData.map((user) => parseInt(user.refNo)).filter((num) => !isNaN(num));
+    const maxRefNo = Math.max(...refNos, 0);
+    return String(maxRefNo + 1);
+  };
+
   const initialValues: FormValues = {
     uid: "",
     refNo: "",
@@ -48,22 +57,16 @@ const AddUser = ({ isModalOpen, onClose, areaCode }: Props) => {
     address: "",
   };
 
-  const { mutate: createUser } = useCreateUser(
-    showSuccessToast,
-    showErrorToast
-  );
-
   const onSubmit = (values: FormValues) => {
     createUser({
       ...values,
       areaCode: areaCode,
-      areaId: areaCode,
+      areaId: areaCode, // Add the appropriate value for areaId here
     });
     formik.resetForm();
     onClose();
   };
 
-  // Formik setup
   const formik = useFormik({
     initialValues,
     onSubmit,
@@ -74,10 +77,10 @@ const AddUser = ({ isModalOpen, onClose, areaCode }: Props) => {
 
       if (!values.refNo) {
         errors.refNo = "Reference No is required";
+      } else if (usersData?.some((user) => user.refNo === values.refNo)) {
+        errors.refNo = "Reference No must be unique";
       }
-      if (!values.uid) {
-        errors.uid = "UID is required";
-      }
+
       if (!values.name) {
         errors.name = "Name is required";
       }
@@ -88,9 +91,20 @@ const AddUser = ({ isModalOpen, onClose, areaCode }: Props) => {
         errors.contactNo = "Contact number is required";
       }
 
+      // Auto-generate UID when refNo and areaCode are valid
+      if (!errors.refNo && areaCode && values.refNo) {
+        values.uid = `${areaCode.replace(/\//g, "_")}_${values.refNo}`;
+      }
+
       return errors;
     },
   });
+
+  useEffect(() => {
+    if (isModalOpen && !formik.values.refNo) {
+      formik.setFieldValue("refNo", calculateNextRefNo());
+    }
+  }, [isModalOpen, usersData]);
 
   const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
     formik;
@@ -138,16 +152,10 @@ const AddUser = ({ isModalOpen, onClose, areaCode }: Props) => {
                 type="text"
                 name="uid"
                 placeholder="UID"
-                className={`input input-bordered w-full ${
-                  errors.uid && touched.uid ? "input-error" : ""
-                }`}
-                onChange={handleChange}
+                className="input input-bordered w-full bg-gray-100"
                 value={values.uid}
-                onBlur={handleBlur}
+                readOnly
               />
-              {errors.uid && touched.uid && (
-                <span className="text-error text-sm">{errors.uid}</span>
-              )}
             </div>
             <div>
               <input
@@ -221,7 +229,7 @@ const AddUser = ({ isModalOpen, onClose, areaCode }: Props) => {
             <button
               type="submit"
               className="btn bg-main text-white mb-2"
-              disabled={formik.isSubmitting}
+              disabled={formik.isSubmitting || !values.uid}
             >
               Submit
             </button>

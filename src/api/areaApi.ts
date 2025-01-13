@@ -8,6 +8,7 @@ import {
   doc,
   updateDoc,
   deleteDoc,
+  setDoc,
 } from "firebase/firestore";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -88,8 +89,9 @@ export const useGetUsersByArea = (areaId: string) => {
 };
 
 export const createUser = async (user: UserType) => {
-  const userCollection = collection(firestore, "users");
-  await addDoc(userCollection, user);
+  const docId = `${user.uid}`; // Generate document ID
+  const userDoc = doc(firestore, "users", docId); // Reference to the document
+  await setDoc(userDoc, user); // Set the document data
   return user;
 };
 

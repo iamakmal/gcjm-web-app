@@ -62,7 +62,7 @@ const LoginForm = () => {
           </button>
         </form>
 
-        <p className="text-center text-xs text-gray-500 mt-6">© YourCompany.com</p>
+        {/* <p className="text-center text-xs text-gray-500 mt-6">© YourCompany.com</p> */}
       </div>
     </div>
   );
