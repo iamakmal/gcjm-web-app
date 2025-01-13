@@ -1,5 +1,6 @@
 import { useGetAreaById, useGetUsersByArea } from "@/api/areaApi";
 import AddUser from "@/components/AddUser";
+import GoBackButton from "@/components/GoBackButton";
 import TableRow from "@/components/TableRow";
 import { UserType } from "@/types/types";
 import { NextPage } from "next";
