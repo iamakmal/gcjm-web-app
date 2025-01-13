@@ -1,5 +1,6 @@
 import { useGetAreaById, useGetUsersByArea } from "@/api/areaApi";
 import AddUser from "@/components/AddUser";
+import GoBackButton from "@/components/GoBackButton";
 import TableRow from "@/components/TableRow";
 import { UserType } from "@/types/types";
 import { NextPage } from "next";
@@ -22,9 +23,12 @@ const Area: NextPage = () => {
   };
   return (
     <div>
-      <h1 className="text-2xl text-center font-semibold">
-        Area {areaData?.name}
-      </h1>
+      <div className="flex items-center justify-between px-4 py-2">
+        <GoBackButton />
+        <h1 className="text-2xl text-center font-semibold flex-grow">
+          Area {areaData?.name}
+        </h1>
+      </div>
       <div className="flex justify-end">
         <button className="btn" onClick={handleOpenModal}>
           Add New User

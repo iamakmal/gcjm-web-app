@@ -38,6 +38,27 @@ export const useGetAreaById = (areaId: string) => {
   });
 };
 
+const getUserById = async (userId: string) => {
+  const userCollectionRef = collection(firestore, "users");
+  const userQuery = query(userCollectionRef, where("uid", "==", userId));
+  const snapshot = await getDocs(userQuery);
+
+  if (!snapshot.empty) {
+    const doc = snapshot.docs[0];
+    return { ...doc.data() };
+  }
+
+  throw new Error(`User with userId ${userId} not found`);
+};
+
+export const useGetUserById = (userId: string) => {
+  return useQuery({
+    queryKey: ["user", userId],
+    queryFn: () => getUserById(userId),
+    enabled: !!userId,
+  });
+};
+
 const getUsersByArea = async (areaId: string) => {
   const usersCollection = collection(firestore, "users");
   const userQuery = query(usersCollection, where("areaId", "==", areaId));
