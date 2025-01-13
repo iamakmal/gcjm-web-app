@@ -6,6 +6,7 @@ import { AreaType } from "@/types/types";
 import { NextPage } from "next";
 import { useFirebase } from "@/contexts/firebaseContext"; // Import the FirebaseContext hook
 import { useRouter } from "next/router"; // For redirection
+import { useEffect } from "react";
 
 const Home: NextPage = () => {
   const { data: areaData, isLoading } = useGetAreas();
@@ -15,10 +16,13 @@ const Home: NextPage = () => {
   if (loading) return <div>Loading...</div>; // Show loading while fetching the auth state
 
   // If not logged in, redirect to the login page
-  if (!user) {
-    router.push("/login");
-    return null;
-  }
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    }
+  }, [user, router]); // Depend on user and router
+
+  if (loading || !user) return <div>Loading...</div>;
 
   return (
     <>

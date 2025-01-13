@@ -1,7 +1,8 @@
-// components/Auth/LoginForm.tsx
 import { useState } from "react";
 import { loginWithEmailPassword } from "@/utils/auth";
 import { useRouter } from "next/router";
+import Image from "next/image"; // Import for image handling
+
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -20,40 +21,49 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded">
-      <h2 className="text-2xl font-semibold text-center mb-4">Login</h2>
-      {error && <p className="text-red-500 text-center">{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            Email
-          </label>
+    <div className="flex justify-center items-center h-screen ">
+  <div className="bg-white p-8 rounded-lg border-2 border-gray-300 shadow-lg w-[350px]">
+        <div className="mb-6 text-center">
+          {/* Add the company logo */}
+          <Image
+            src="/Slogo.png"
+            alt="Logo"
+            className="mx-auto mb-4"
+            width={150} // Set the logo width
+            height={200} // Maintain the aspect ratio
+          />
+          {/* <h2 className="text-2xl font-semibold mb-2">Login</h2> */}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+        </div>
+
+        {/* Login Form */}
+        <form onSubmit={handleSubmit}>
           <input
-            id="email"
             type="email"
-            className="w-full p-2 border border-gray-300 rounded-md"
+            placeholder="Username or Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="w-full p-3 mb-4 border border-gray-300 rounded-md"
           />
-        </div>
-        <div className="mb-6">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
           <input
-            id="password"
             type="password"
-            className="w-full p-2 border border-gray-300 rounded-md"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className="w-full p-3 mb-6 border border-gray-300 rounded-md"
           />
-        </div>
-        <button type="submit" className="w-full py-2 bg-blue-600 text-white rounded-md">
-          Login
-        </button>
-      </form>
+          <button
+            type="submit"
+            className="w-full p-3 bg-[#0078d7] text-white rounded-md hover:bg-[#005bb5]"
+          >
+            Login
+          </button>
+        </form>
+
+        <p className="text-center text-xs text-gray-500 mt-6">© YourCompany.com</p>
+      </div>
     </div>
   );
 };
