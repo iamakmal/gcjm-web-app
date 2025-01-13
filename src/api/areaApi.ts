@@ -1,5 +1,5 @@
 import { firestore } from "@/config/firebase";
-import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AreaType, UserType } from "@/types/types";
@@ -61,9 +61,12 @@ export const useGetUserById = (userId: string) => {
 
 const getUsersByArea = async (areaId: string) => {
   const usersCollection = collection(firestore, "users");
-  const userQuery = query(usersCollection, where("areaId", "==", areaId));
+  const userQuery = query(usersCollection, where("areaId", "==", areaId)); // Query for the `areaId`
   const snapshot = await getDocs(userQuery);
-  return snapshot.docs.map((doc) => ({ ...doc.data() } as UserType));
+  return snapshot.docs
+  .map((doc) => ({ ...doc.data() } as UserType))
+  .sort((a, b) => a.refNo.localeCompare(b.refNo, undefined, { numeric: true }));
+  
 };
 
 export const useGetUsersByArea = (areaId: string) => {
@@ -87,6 +90,43 @@ export const useCreateUser = (onSuccess: () => void, onError: () => void) => {
     onError,
     onSuccess: (user: UserType) => {
       queryClient.invalidateQueries({ queryKey: ["user-area", user.areaCode] });
+      onSuccess();
+    },
+  });
+};
+
+export const editUser = async (userId: string, updatedData: Partial<UserType>) => {
+  const userDoc = doc(firestore, "users", userId);
+  await updateDoc(userDoc, updatedData);
+};
+
+export const useEditUser = (onSuccess: () => void, onError: () => void) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { userId: string; updatedData: Partial<UserType> }) =>
+      editUser(data.userId, data.updatedData),
+    onError,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-area"] });
+      onSuccess();
+    },
+  });
+};
+
+
+
+export const deleteUser = async (userId: string) => {
+  const userDoc = doc(firestore, "users", userId);
+  await deleteDoc(userDoc);
+};
+
+export const useDeleteUser = (onSuccess: () => void, onError: () => void) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (userId: string) => deleteUser(userId),
+    onError,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-area"] });
       onSuccess();
     },
   });
