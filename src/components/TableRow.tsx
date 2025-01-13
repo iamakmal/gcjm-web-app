@@ -1,5 +1,6 @@
 import { useDeleteUser, useEditUser } from "@/api/areaApi";
 import { UserType } from "@/types/types";
+import { useRouter } from "next/router";
 
 import React, { useState } from "react";
 
@@ -11,6 +12,7 @@ const TableRow = ({ user }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editFormData, setEditFormData] = useState(user);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const router = useRouter();
 
   const editUserMutation = useEditUser(
     () => setIsEditing(false),
@@ -109,7 +111,12 @@ const TableRow = ({ user }: Props) => {
       ) : (
         <>
           <td>{user.refNo}</td>
-          <td>{user.name}</td>
+          <td
+            onClick={() => router.push(`/user/${user?.uid}`)}
+            className="cursor-pointer hover:font-bold hover:underline hover:underline-offset-2"
+          >
+            {user.name}
+          </td>
           <td>{user.NIC}</td>
           <td>{user.contactNo}</td>
           <td>{user.subscription}</td>

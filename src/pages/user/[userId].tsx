@@ -1,12 +1,27 @@
-import { useGetUserById } from "@/api/areaApi";
+import { useGetPaymentsOfUser, useGetUserById } from "@/api/areaApi";
 import GoBackButton from "@/components/GoBackButton";
+import UserPaymentTable from "@/components/UserPaymentTable";
+import { PaymentType } from "@/types/types";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 
 const User: NextPage = () => {
   const router = useRouter();
   const userId = router.query.userId;
-  const { data: userData } = useGetUserById(userId as string);
+  const { data: userData, isPending: isUserPending } = useGetUserById(
+    userId as string
+  );
+  const { data: paymentData, isPending: isPaymentPending } =
+    useGetPaymentsOfUser(userId as string);
+
+  if (isUserPending && isPaymentPending) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <span className="loading loading-bars loading-lg"></span>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="flex items-center justify-between px-4 py-2">
@@ -84,6 +99,10 @@ const User: NextPage = () => {
           <div className="divider"></div>
         </div>
       </div>
+      <UserPaymentTable
+        payment={paymentData as PaymentType[]}
+        isLoading={isPaymentPending}
+      />
     </>
   );
 };

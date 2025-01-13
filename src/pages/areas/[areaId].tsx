@@ -26,9 +26,14 @@ const Area: NextPage = () => {
 
   return (
     <div>
-      <h1 className="text-2xl text-center font-semibold">
-        Area {areaData?.name}
-      </h1>
+      <div className="flex items-center justify-between px-4 py-2 flex-wrap">
+        <div className="w-24">
+          <GoBackButton />
+        </div>
+        <h1 className="text-2xl font-semibold text-center flex-1">
+          Area {areaData?.name}
+        </h1>
+      </div>
       <div className="flex justify-between items-center bg-white p-4 shadow-md rounded-lg border border-gray-200 m-4">
         <h2 className="text-xl font-semibold text-gray-800">
           Members: <span className="text-indigo-600">{totalUsers}</span>
