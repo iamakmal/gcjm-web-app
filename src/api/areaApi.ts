@@ -159,3 +159,23 @@ export const useDeleteUser = (onSuccess: () => void, onError: () => void) => {
     },
   });
 };
+
+export const addPayment = async (payment: PaymentType) => {
+  const paymentCollection = collection(firestore, "payments");
+  await addDoc(paymentCollection, payment);
+  return payment;
+};
+
+export const useAddPayment = (onSuccess: () => void, onError: () => void) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payment: PaymentType) => addPayment(payment),
+    onError,
+    onSuccess: (payment: PaymentType) => {
+      queryClient.invalidateQueries({
+        queryKey: ["user-payment", payment.userId],
+      });
+      onSuccess();
+    },
+  });
+};

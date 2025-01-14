@@ -1,12 +1,15 @@
 import { useGetPaymentsOfUser, useGetUserById } from "@/api/areaApi";
+import AddPayment from "@/components/AddPayment";
 import GoBackButton from "@/components/GoBackButton";
 import UserPaymentTable from "@/components/UserPaymentTable";
 import { PaymentType } from "@/types/types";
 import FileSaver from "file-saver";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 const User: NextPage = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const userId = router.query.userId;
   const { data: userData, isPending: isUserPending } = useGetUserById(
@@ -14,6 +17,14 @@ const User: NextPage = () => {
   );
   const { data: paymentData, isPending: isPaymentPending } =
     useGetPaymentsOfUser(userId as string);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   if (isUserPending && isPaymentPending) {
     return (
@@ -140,9 +151,23 @@ const User: NextPage = () => {
           <div className="divider"></div>
         </div>
       </div>
+      <div className="flex justify-end px-5">
+        <button
+          className="px-4 py-2 text-md font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all"
+          onClick={handleOpenModal}
+        >
+          + Add Payment
+        </button>
+      </div>
       <UserPaymentTable
         payment={paymentData as PaymentType[]}
         isLoading={isPaymentPending}
+      />
+      <AddPayment
+        areaCode={userData?.areaId}
+        userId={userData?.uid}
+        isModalOpen={isModalOpen}
+        onClose={handleCloseModal}
       />
     </>
   );
