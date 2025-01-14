@@ -78,7 +78,10 @@ const User: NextPage = () => {
       <div className="flex items-center justify-between px-4 py-2">
         <GoBackButton />
         <h1 className="text-center text-2xl font-semibold">User Details</h1>
-        <button onClick={handleExport} className="btn btn-primary">
+        <button
+          onClick={handleExport}
+          className="px-4 py-2 text-md font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all"
+        >
           Export to CSV
         </button>
       </div>

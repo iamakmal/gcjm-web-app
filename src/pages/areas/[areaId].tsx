@@ -30,8 +30,16 @@ const Area: NextPage = () => {
   };
 
   const filteredUsers = usersData?.filter((user: UserType) =>
-    [user.name, user.refNo, user.address].some((field) =>
-      field.toLowerCase().includes(searchQuery.toLowerCase())
+    [
+      user.name,
+      user.refNo,
+      user.address,
+      user.NIC,
+      user.contactNo,
+      user.subscription,
+      user.uid,
+    ].some((field) =>
+      field.toString().toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
 
@@ -73,6 +81,12 @@ const Area: NextPage = () => {
           Members: <span className="text-indigo-600">{totalUsers}</span>
         </h2>
         <div className="flex gap-4">
+          <button
+            className="px-4 py-2 text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all"
+            onClick={() => router.push(`/payments/${areaId}`)}
+          >
+            Payment History
+          </button>
           <button
             className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all"
             onClick={handleExport}

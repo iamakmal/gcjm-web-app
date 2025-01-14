@@ -236,3 +236,20 @@ export const useDeletePayment = (
     },
   });
 };
+
+const getPaymentsOfArea = async (areaId: string) => {
+  const paymentsCollection = collection(firestore, "payments");
+  const paymentQuery = query(paymentsCollection, where("areaId", "==", areaId));
+  const snapshot = await getDocs(paymentQuery);
+  return snapshot.docs.map(
+    (doc) => ({ id: doc.id, ...doc.data() } as PaymentType)
+  );
+};
+
+export const useGetPaymentsOfArea = (areaId: string) => {
+  return useQuery({
+    queryKey: ["area-payment", areaId],
+    queryFn: () => getPaymentsOfArea(areaId),
+    enabled: !!areaId,
+  });
+};
