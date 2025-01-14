@@ -2,6 +2,7 @@ import { useGetPaymentsOfUser, useGetUserById } from "@/api/areaApi";
 import GoBackButton from "@/components/GoBackButton";
 import UserPaymentTable from "@/components/UserPaymentTable";
 import { PaymentType } from "@/types/types";
+import FileSaver from "file-saver";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 
@@ -22,13 +23,53 @@ const User: NextPage = () => {
     );
   }
 
+  const handleExport = () => {
+    let csvContent = "User Details\n";
+
+    csvContent +=
+      "Name,Reference No,UID,NIC,Area Code,Contact No,Subscription,Address,Last Payment,Last Payment Date\n";
+
+    csvContent += `"${userData?.name || ""}",`;
+    csvContent += `"${userData?.refNo || ""}",`;
+    csvContent += `"${userData?.uid || ""}",`;
+    csvContent += `"${userData?.NIC || ""}",`;
+    csvContent += `"${userData?.areaId || ""}",`;
+    csvContent += `"${userData?.contactNo || ""}",`;
+    csvContent += `"${userData?.subscription || ""}",`;
+    csvContent += `"${userData?.address || ""}",`;
+    csvContent += `"${userData?.lastPayment || ""}",`;
+    csvContent += `"${
+      userData?.lastPaymentDate
+        ? new Date(userData.lastPaymentDate).toLocaleString()
+        : ""
+    }"\n\n`;
+
+    csvContent += "Payment History\n";
+    csvContent += "Year,Months,Amount,Status,Payment Date\n";
+
+    paymentData?.forEach((payment) => {
+      csvContent += `"${payment.year}",`;
+      csvContent += `"${payment.month.join("; ")}",`;
+      csvContent += `"${payment.amount}",`;
+      csvContent += `"${payment.status}",`;
+      csvContent += `"${
+        payment.paidAt ? payment.paidAt.toDate().toLocaleString() : ""
+      }"\n`;
+    });
+
+    // Create and save the file
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    FileSaver.saveAs(blob, `${userData?.name}_details.csv`);
+  };
+
   return (
     <>
       <div className="flex items-center justify-between px-4 py-2">
         <GoBackButton />
-        <h1 className="text-center text-2xl font-semibold flex-grow">
-          User Details
-        </h1>
+        <h1 className="text-center text-2xl font-semibold">User Details</h1>
+        <button onClick={handleExport} className="btn btn-primary">
+          Export to CSV
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 p-10">
