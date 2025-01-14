@@ -5,9 +5,10 @@ import TableRow from "@/components/TableRow";
 import { UserType } from "@/types/types";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import FileSaver from "file-saver";
+import { useFirebase } from "@/contexts/firebaseContext";
 
 const Area: NextPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,6 +17,7 @@ const Area: NextPage = () => {
   const areaId = router.query.areaId;
   const { data: areaData } = useGetAreaById(areaId as string);
   const { data: usersData, isLoading } = useGetUsersByArea(areaData?.areaCode);
+  const { user } = useFirebase();
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -65,6 +67,16 @@ const Area: NextPage = () => {
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     FileSaver.saveAs(blob, `Area_${areaData?.areaCode}_Users.csv`);
   };
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    }
+  }, [user, router]);
+
+  if (!router.isReady || !user) {
+    return null;
+  }
 
   return (
     <div>
