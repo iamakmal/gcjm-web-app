@@ -9,6 +9,8 @@ import {
   updateDoc,
   deleteDoc,
   setDoc,
+  Timestamp,
+  onSnapshot,
 } from "firebase/firestore";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -162,6 +164,85 @@ export const useDeleteUser = (onSuccess: () => void, onError: () => void) => {
   });
 };
 
+
+
+// Fetch today's collection
+export const fetchTodayCollection = async () => {
+  const now = new Date();
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+
+  const q = query(
+    collection(firestore, "payments"),
+    where("paidAt", ">=", Timestamp.fromDate(startOfDay)),
+    where("paidAt", "<=", Timestamp.fromDate(endOfDay))
+  );
+
+  const snapshot = await getDocs(q);
+  return snapshot.docs.reduce((total, doc) => total + doc.data().amount, 0);
+};
+
+// Fetch monthly collection
+export const fetchMonthCollection = async () => {
+  const now = new Date();
+  const currentMonth = now.toLocaleString("default", { month: "short" }).toUpperCase();
+  const currentYear = now.getFullYear();
+
+  const q = query(
+    collection(firestore, "payments"),
+    where("month", "array-contains", currentMonth),
+    where("year", "==", currentYear)
+  );
+
+  const snapshot = await getDocs(q);
+  return snapshot.docs.reduce((total, doc) => total + doc.data().amount, 0);
+};
+
+// Real-time updates for today's collection
+export const subscribeToTodayCollection = (callback: (total: number) => void) => {
+  const now = new Date();
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+
+  const q = query(
+    collection(firestore, "payments"),
+    where("paidAt", ">=", Timestamp.fromDate(startOfDay)),
+    where("paidAt", "<=", Timestamp.fromDate(endOfDay))
+  );
+
+  return onSnapshot(q, (snapshot) => {
+    const total = snapshot.docs.reduce((sum, doc) => sum + doc.data().amount, 0);
+    callback(total);
+  });
+};
+
+// Fetch monthly collection with history
+// Fetch monthly collection with history
+export const fetchMonthlyCollectionHistoryOptimized = async (year: number) => {
+  const paymentsCollection = collection(firestore, "payments");
+
+  const allDocs = await getDocs(paymentsCollection);
+  const monthlyTotals = Array(12).fill(0); // Array to store total for each month
+
+  allDocs.forEach((doc) => {
+    const paymentData = doc.data();
+    const paymentMonth = paymentData?.paymentMonth; // Month stored as an integer (0 = January, 1 = February, ...)
+    const paymentYear = paymentData?.paymentYear;
+    const amount = paymentData?.amount || 0;
+
+    if (paymentYear === year && paymentMonth >= 0 && paymentMonth < 12) {
+      // Add the payment amount to the corresponding month in the total array
+      monthlyTotals[paymentMonth] += amount;
+    }
+  });
+
+  return monthlyTotals.map((total, month) => ({
+    month: new Date(year, month, 1).toLocaleString("default", { month: "short" }),
+    year,
+    total,
+  }));
+};
+
 export const addPayment = async (payment: PaymentType) => {
   const paymentCollection = collection(firestore, "payments");
   await addDoc(paymentCollection, payment);
@@ -253,3 +334,4 @@ export const useGetPaymentsOfArea = (areaId: string) => {
     enabled: !!areaId,
   });
 };
+
