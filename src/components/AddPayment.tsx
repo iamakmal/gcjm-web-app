@@ -4,6 +4,12 @@ import React, { useEffect, useState } from "react";
 import Modal from "./Modal";
 import { useAddPayment } from "@/api/areaApi";
 import Select from "react-select";
+import {
+  formatLocalDateTime,
+  MonthOption,
+  MONTHS,
+  PAYMENT_STATUSES,
+} from "@/utils/commonUtils";
 
 interface Props {
   isModalOpen: boolean;
@@ -19,31 +25,6 @@ interface FormValues {
   paidAt: string;
   status: string;
 }
-
-interface MonthOption {
-  label: string;
-  value: string;
-}
-
-const MONTHS: MonthOption[] = [
-  { value: "JAN", label: "January" },
-  { value: "FEB", label: "February" },
-  { value: "MAR", label: "March" },
-  { value: "APR", label: "April" },
-  { value: "MAY", label: "May" },
-  { value: "JUN", label: "June" },
-  { value: "JUL", label: "July" },
-  { value: "AUG", label: "August" },
-  { value: "SEP", label: "September" },
-  { value: "OCT", label: "October" },
-  { value: "NOV", label: "November" },
-  { value: "DEC", label: "December" },
-];
-
-const PAYMENT_STATUSES = [
-  { value: "completed", label: "Completed" },
-  { value: "incomplete", label: "Incomplete" },
-];
 
 const AddPayment = ({ isModalOpen, onClose, areaCode, userId }: Props) => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -67,16 +48,6 @@ const AddPayment = ({ isModalOpen, onClose, areaCode, userId }: Props) => {
     showSuccessToast,
     showErrorToast
   );
-
-  function formatLocalDateTime(date: Date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-
-    return `${year}-${month}-${day}T${hours}:${minutes}`; // Format for datetime-local
-  }
 
   const initialValues: FormValues = {
     year: new Date().getFullYear().toString(),
@@ -145,7 +116,7 @@ const AddPayment = ({ isModalOpen, onClose, areaCode, userId }: Props) => {
   return (
     <>
       {toastMessage && (
-        <div className="toast toast-bottom toast-end">
+        <div className="toast toast-top toast-end">
           <div
             className={`text-white alert ${
               toastMessage.includes("Successfully")

@@ -111,7 +111,9 @@ const getPaymentsOfUser = async (userId: string) => {
   const paymentsCollection = collection(firestore, "payments");
   const paymentQuery = query(paymentsCollection, where("userId", "==", userId));
   const snapshot = await getDocs(paymentQuery);
-  return snapshot.docs.map((doc) => ({ ...doc.data() } as PaymentType));
+  return snapshot.docs.map(
+    (doc) => ({ id: doc.id, ...doc.data() } as PaymentType)
+  );
 };
 
 export const useGetPaymentsOfUser = (userId: string) => {
@@ -174,6 +176,61 @@ export const useAddPayment = (onSuccess: () => void, onError: () => void) => {
     onSuccess: (payment: PaymentType) => {
       queryClient.invalidateQueries({
         queryKey: ["user-payment", payment.userId],
+      });
+      onSuccess();
+    },
+  });
+};
+
+export const editPayment = async (
+  paymentId: string,
+  updatedData: Partial<PaymentType>
+) => {
+  const paymentDoc = doc(firestore, "payments", paymentId);
+  await updateDoc(paymentDoc, updatedData);
+  return updatedData;
+};
+
+export const useEditPayment = (onSuccess: () => void, onError: () => void) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: {
+      paymentId: string;
+      updatedData: Partial<PaymentType>;
+    }) => editPayment(data.paymentId, data.updatedData),
+    onError,
+    onSuccess: (payment: Partial<PaymentType>) => {
+      queryClient.invalidateQueries({
+        queryKey: ["user-payment", payment.userId],
+      });
+      onSuccess();
+    },
+  });
+};
+
+export const deletePayment = async (paymentId: string, userId: string) => {
+  const paymentDoc = doc(firestore, "payments", paymentId);
+  await deleteDoc(paymentDoc);
+  return { paymentId, userId };
+};
+
+export const useDeletePayment = (
+  onSuccess: () => void,
+  onError: () => void
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      paymentId,
+      userId,
+    }: {
+      paymentId: string;
+      userId: string;
+    }) => deletePayment(paymentId, userId),
+    onError,
+    onSuccess: ({ userId }: { userId: string }) => {
+      queryClient.invalidateQueries({
+        queryKey: ["user-payment", userId],
       });
       onSuccess();
     },
