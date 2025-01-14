@@ -38,11 +38,16 @@ const AddUser = ({ isModalOpen, onClose, areaCode }: Props) => {
     onClose();
   };
 
-  const { mutate: createUser } = useCreateUser(showSuccessToast, showErrorToast);
+  const { mutate: createUser } = useCreateUser(
+    showSuccessToast,
+    showErrorToast
+  );
 
   const calculateNextRefNo = (): string => {
     if (!usersData || usersData.length === 0) return "1"; // Start from 001 if no users exist
-    const refNos = usersData.map((user) => parseInt(user.refNo)).filter((num) => !isNaN(num));
+    const refNos = usersData
+      .map((user) => parseInt(user.refNo))
+      .filter((num) => !isNaN(num));
     const maxRefNo = Math.max(...refNos, 0);
     return String(maxRefNo + 1);
   };
@@ -133,7 +138,7 @@ const AddUser = ({ isModalOpen, onClose, areaCode }: Props) => {
           <div className="flex flex-col gap-5">
             <div>
               <input
-                type="text"
+                type="number"
                 name="refNo"
                 placeholder="Reference No"
                 className={`input input-bordered w-full ${
@@ -191,7 +196,7 @@ const AddUser = ({ isModalOpen, onClose, areaCode }: Props) => {
             </div>
             <div>
               <input
-                type="text"
+                type="number"
                 name="contactNo"
                 placeholder="Contact No"
                 className={`input input-bordered w-full ${
@@ -207,7 +212,7 @@ const AddUser = ({ isModalOpen, onClose, areaCode }: Props) => {
             </div>
             <div>
               <input
-                type="text"
+                type="number"
                 name="subscription"
                 placeholder="Subscription"
                 className="input input-bordered w-full"
