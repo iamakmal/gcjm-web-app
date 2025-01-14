@@ -137,7 +137,7 @@ const AddPayment = ({ isModalOpen, onClose, areaCode, userId }: Props) => {
           <div className="flex flex-col gap-5">
             <div>
               <input
-                type="text"
+                type="number"
                 name="year"
                 placeholder="Year"
                 className={`input input-bordered w-full ${

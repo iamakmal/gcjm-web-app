@@ -4,7 +4,7 @@ import { useState } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import AreaPaymentRow from "@/components/AreaPaymentRow";
 import { PaymentType } from "@/types/types";
-import { useGetPaymentsOfArea } from "@/api/areaApi";
+import { useGetAreaById, useGetPaymentsOfArea } from "@/api/areaApi";
 import GoBackButton from "@/components/GoBackButton";
 import FileSaver from "file-saver";
 
@@ -12,13 +12,14 @@ const Payments: NextPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
   const areaId = router.query.areaId;
+  const { data: areaData } = useGetAreaById(areaId as string);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
 
   const { data: paymentData, isPending: isPaymentPending } =
-    useGetPaymentsOfArea(areaId as string);
+    useGetPaymentsOfArea(areaData?.areaCode);
 
   const filteredPayments = paymentData?.filter((payment: PaymentType) =>
     [
