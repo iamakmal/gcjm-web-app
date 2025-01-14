@@ -243,8 +243,6 @@ export const fetchMonthlyCollectionHistoryOptimized = async (year: number) => {
   }));
 };
 
-
-=======
 export const addPayment = async (payment: PaymentType) => {
   const paymentCollection = collection(firestore, "payments");
   await addDoc(paymentCollection, payment);
