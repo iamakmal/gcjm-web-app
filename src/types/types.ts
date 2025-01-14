@@ -24,6 +24,7 @@ export interface UserType {
 }
 
 export interface PaymentType {
+  id?: string;
   userId: string;
   areaId: string;
   amount: string;

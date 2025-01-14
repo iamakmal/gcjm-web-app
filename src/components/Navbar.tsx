@@ -1,8 +1,21 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router"; // Import useRouter
+import { logout } from "@/utils/auth"; // Import the logout function
 
 export default function Navbar() {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await logout(); // Call the logout function
+      router.push("/login"); // Redirect to the login page after logout
+    } catch (error: any) {
+      alert(error.message); // Show an error message if logout fails
+    }
+  };
+
   return (
     <div className="navbar bg-[#1E5866] mb-2 flex-wrap">
       <div className="flex h-16">
@@ -22,6 +35,14 @@ export default function Navbar() {
             Ghaneemathul Cassimiya Jumma Mosque Dematagoda Place
           </p>
         </Link>
+      </div>
+      <div className="mr-4">
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        >
+          Logout
+        </button>
       </div>
     </div>
   );
