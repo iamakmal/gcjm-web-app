@@ -4,14 +4,21 @@ import type { AppProps } from "next/app";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { FirebaseProvider } from "@/contexts/firebaseContext"; // Import the FirebaseProvider
 import Navbar from "@/components/Navbar"; // Import the Navbar component
+import { useRouter } from "next/router";
 
 const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+  const noNavbarRoutes = ["/login"];
+
+  const showNavbar = !noNavbarRoutes.includes(router.pathname);
+
   return (
     <QueryClientProvider client={queryClient}>
-      <FirebaseProvider> {/* Wrap the app with FirebaseProvider */}
-      <Navbar />
+      <FirebaseProvider>
+        {" "}
+        {showNavbar && <Navbar />}
         <Component {...pageProps} />
       </FirebaseProvider>
     </QueryClientProvider>
