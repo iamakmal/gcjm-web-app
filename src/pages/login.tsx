@@ -3,7 +3,6 @@ import { loginWithEmailPassword } from "@/utils/auth";
 import { useRouter } from "next/router";
 import Image from "next/image"; // Import for image handling
 
-
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,14 +14,14 @@ const LoginForm = () => {
     try {
       await loginWithEmailPassword(email, password);
       router.push("/");
-    } catch (err) {
+    } catch {
       setError("Invalid credentials or something went wrong.");
     }
   };
 
   return (
     <div className="flex justify-center items-center h-screen ">
-  <div className="bg-white p-8 rounded-lg border-2 border-gray-300 shadow-lg w-[350px]">
+      <div className="bg-white p-8 rounded-lg border-2 border-gray-300 shadow-lg w-[350px]">
         <div className="mb-6 text-center">
           {/* Add the company logo */}
           <Image

@@ -11,8 +11,12 @@ export default function Navbar() {
     try {
       await logout(); // Call the logout function
       router.push("/login"); // Redirect to the login page after logout
-    } catch (error: any) {
-      alert(error.message); // Show an error message if logout fails
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(error.message); // Show an error message if logout fails
+      } else {
+        alert("An unknown error occurred"); // Fallback for unknown error types
+      }
     }
   };
 

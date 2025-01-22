@@ -2,11 +2,12 @@ import { useGetPaymentsOfUser, useGetUserById } from "@/api/areaApi";
 import AddPayment from "@/components/AddPayment";
 import GoBackButton from "@/components/GoBackButton";
 import UserPaymentTable from "@/components/UserPaymentTable";
+import { useFirebase } from "@/contexts/firebaseContext";
 import { PaymentType } from "@/types/types";
 import FileSaver from "file-saver";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const User: NextPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,6 +16,7 @@ const User: NextPage = () => {
   const { data: userData, isPending: isUserPending } = useGetUserById(
     userId as string
   );
+  const { user } = useFirebase();
   const { data: paymentData, isPending: isPaymentPending } =
     useGetPaymentsOfUser(userId as string);
 
@@ -25,6 +27,16 @@ const User: NextPage = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    }
+  }, [user, router]);
+
+  if (!router.isReady || !user) {
+    return null;
+  }
 
   if (isUserPending && isPaymentPending) {
     return (

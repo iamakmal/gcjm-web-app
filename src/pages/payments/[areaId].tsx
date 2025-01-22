@@ -1,18 +1,21 @@
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import AreaPaymentRow from "@/components/AreaPaymentRow";
 import { PaymentType } from "@/types/types";
 import { useGetAreaById, useGetPaymentsOfArea } from "@/api/areaApi";
 import GoBackButton from "@/components/GoBackButton";
 import FileSaver from "file-saver";
+import { useFirebase } from "@/contexts/firebaseContext";
 
 const Payments: NextPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
   const areaId = router.query.areaId;
   const { data: areaData } = useGetAreaById(areaId as string);
+
+  const { user } = useFirebase();
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
@@ -54,6 +57,16 @@ const Payments: NextPage = () => {
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     FileSaver.saveAs(blob, `Payment_Area_${areaId}.csv`);
   };
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    }
+  }, [user, router]);
+
+  if (!router.isReady || !user) {
+    return null;
+  }
 
   return (
     <div>

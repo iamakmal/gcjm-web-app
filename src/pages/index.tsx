@@ -1,4 +1,8 @@
-import { fetchMonthCollection, fetchMonthlyCollectionHistoryOptimized, fetchTodayCollection, subscribeToTodayCollection, useGetAreas } from "@/api/areaApi";
+import {
+  fetchMonthCollection,
+  fetchTodayCollection,
+  useGetAreas,
+} from "@/api/areaApi";
 import { useQuery } from "@tanstack/react-query";
 import { collection, getDocs } from "firebase/firestore";
 import { firestore } from "@/config/firebase";
@@ -10,9 +14,6 @@ import { useFirebase } from "@/contexts/firebaseContext";
 import { useRouter } from "next/router";
 import { FaUsers, FaMapMarkedAlt, FaMoneyBillWave } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { Bar } from "react-chartjs-2";
-
-
 
 const fetchUsers = async () => {
   const usersCollection = collection(firestore, "users");
@@ -21,14 +22,14 @@ const fetchUsers = async () => {
 };
 
 const getCurrentDay = () => {
-  return new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(new Date());
+  return new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(
+    new Date()
+  );
 };
 
 const getCurrentMonth = () => {
   return new Intl.DateTimeFormat("en-US", { month: "long" }).format(new Date());
 };
-
-
 
 const Home: NextPage = () => {
   const { data: areaData = [], isLoading: areasLoading } = useGetAreas();
@@ -49,16 +50,13 @@ const Home: NextPage = () => {
         //const currentYear = new Date().getFullYear(); // Get the current year dynamically
         fetchTodayCollection().then(setTodayCollection);
         fetchMonthCollection().then(setMonthCollection);
-        
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-  
+
     fetchData();
   }, []);
-  
-  
 
   if (loading || usersLoading || areasLoading) {
     return (
@@ -78,38 +76,36 @@ const Home: NextPage = () => {
 
   // Prepare chart data
 
-
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-5">
-  <AnalyticsCard
-    name="Total Areas"
-    amount={areaData?.length || 0}
-    icon={<FaMapMarkedAlt className="h-8 w-8 text-white" />}
-    bgColor="#1E5866" // Match color for "Areas"
-  />
-  <AnalyticsCard
-    name="Total Users"
-    amount={userCount || 0}
-    icon={<FaUsers className="h-8 w-8 text-white" />}
-    bgColor="#28A745" // Match color for "Users"
-  />
-  <AnalyticsCard
-        name={`${currentDay} Collection`} 
-        amount={todayCollection}
-        icon={<FaMoneyBillWave className="h-8 w-8 text-white" />}
-        isCurrency={true}
-        bgColor="#FFC107"
-      />
-      <AnalyticsCard
-        name={`${currentMonth} Collection`} 
-        amount={monthCollection}
-        icon={<FaMoneyBillWave className="h-8 w-8 text-white" />}
-        isCurrency={true}
-        bgColor="#6F42C1"
-      />
-</div>
-
+        <AnalyticsCard
+          name="Total Areas"
+          amount={areaData?.length || 0}
+          icon={<FaMapMarkedAlt className="h-8 w-8 text-white" />}
+          bgColor="#1E5866" // Match color for "Areas"
+        />
+        <AnalyticsCard
+          name="Total Users"
+          amount={userCount || 0}
+          icon={<FaUsers className="h-8 w-8 text-white" />}
+          bgColor="#28A745" // Match color for "Users"
+        />
+        <AnalyticsCard
+          name={`${currentDay} Collection`}
+          amount={todayCollection}
+          icon={<FaMoneyBillWave className="h-8 w-8 text-white" />}
+          isCurrency={true}
+          bgColor="#FFC107"
+        />
+        <AnalyticsCard
+          name={`${currentMonth} Collection`}
+          amount={monthCollection}
+          icon={<FaMoneyBillWave className="h-8 w-8 text-white" />}
+          isCurrency={true}
+          bgColor="#6F42C1"
+        />
+      </div>
 
       <div className="flex flex-wrap justify-center gap-4 mt-10">
         {areasLoading
@@ -128,7 +124,6 @@ const Home: NextPage = () => {
             ))}
       </div>
       {/* Bar chart for Monthly Collection */}
-    
     </>
   );
 };
