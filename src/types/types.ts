@@ -27,9 +27,9 @@ export interface PaymentType {
   id?: string;
   userId: string;
   areaId: string;
-  amount: string;
+  amount: number;
   month: string[];
-  year: string;
+  year: number;
   paidAt: Timestamp;
   status: string;
 }

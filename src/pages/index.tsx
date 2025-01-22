@@ -9,7 +9,7 @@ import { firestore } from "@/config/firebase";
 import AnalyticsCard from "@/components/AnalyticsCard";
 import AreaCard from "@/components/AreaCard";
 import { AreaType } from "@/types/types";
-import { NextPage } from "next";
+import {  NextPage } from "next";
 import { useFirebase } from "@/contexts/firebaseContext";
 import { useRouter } from "next/router";
 import { FaUsers, FaMapMarkedAlt, FaMoneyBillWave } from "react-icons/fa";
