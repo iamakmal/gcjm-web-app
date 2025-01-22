@@ -167,6 +167,8 @@ export const useDeleteUser = (onSuccess: () => void, onError: () => void) => {
 
 
 // Fetch today's collection
+
+
 export const fetchTodayCollection = async () => {
   const now = new Date();
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -179,8 +181,22 @@ export const fetchTodayCollection = async () => {
   );
 
   const snapshot = await getDocs(q);
-  return snapshot.docs.reduce((total, doc) => total + doc.data().amount, 0);
+
+  let total = 0;
+
+  snapshot.docs.forEach((doc) => {
+    const data = doc.data();
+    const amount = data.amount || 0; // Ensure amount is defined
+    const monthsPaid = data.month || []; // Handle cases where month is undefined
+
+    if (Array.isArray(monthsPaid) && monthsPaid.length > 0) {
+      total += amount * monthsPaid.length; // Multiply amount by the number of months paid
+    }
+  });
+
+  return Math.round(total); // Round the total to an integer, similar to the Flutter code
 };
+
 
 // Fetch monthly collection
 export const fetchMonthCollection = async () => {

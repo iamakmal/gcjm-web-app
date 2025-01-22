@@ -19,6 +19,8 @@ const Area: NextPage = () => {
   const { data: usersData, isLoading } = useGetUsersByArea(areaData?.areaCode);
   const { user } = useFirebase();
 
+  
+
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };

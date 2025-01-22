@@ -19,9 +19,11 @@ interface Props {
 }
 
 interface FormValues {
-  year: string;
+  userId: string;
+  areaId: string;
+  amount: number;
   month: string[];
-  amount: string;
+  year: number;
   paidAt: string;
   status: string;
 }
@@ -50,24 +52,30 @@ const AddPayment = ({ isModalOpen, onClose, areaCode, userId }: Props) => {
   );
 
   const initialValues: FormValues = {
-    year: new Date().getFullYear().toString(),
+    year: new Date().getFullYear(),
     month: [],
-    amount: "",
+    amount: 0,
     paidAt: formatLocalDateTime(new Date()),
     status: "",
+    userId: "",
+    areaId: ""
   };
 
   const onSubmit = (values: FormValues) => {
     const formattedValues = {
       ...values,
-      paidAt: Timestamp.fromDate(new Date(values.paidAt)),
-      areaId: areaCode,
-      userId,
+      paidAt: Timestamp.fromDate(new Date(values.paidAt)), // Timestamp matches Firebase
+      areaId: areaCode, // Matches string type for areaCode
+      userId, // Matches string type for userId
+      amount: values.amount,
+      year: values.year 
     };
     addPayment(formattedValues);
     formik.resetForm();
     onClose();
   };
+  
+  
 
   const formik = useFormik({
     initialValues,
@@ -75,7 +83,7 @@ const AddPayment = ({ isModalOpen, onClose, areaCode, userId }: Props) => {
     validateOnChange: true,
     validateOnBlur: true,
     validate: (values) => {
-      const errors: Partial<FormValues> = {};
+      const errors: Partial<Record<keyof FormValues, string | string[]>> = {};
 
       if (!values.year) {
         errors.year = "Year is required";

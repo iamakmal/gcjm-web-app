@@ -15,6 +15,8 @@ import { useRouter } from "next/router";
 import { FaUsers, FaMapMarkedAlt, FaMoneyBillWave } from "react-icons/fa";
 import { useEffect, useState } from "react";
 
+
+
 const fetchUsers = async () => {
   const usersCollection = collection(firestore, "users");
   const snapshot = await getDocs(usersCollection);
@@ -40,6 +42,8 @@ const Home: NextPage = () => {
 
   const { user, loading } = useFirebase();
   const router = useRouter();
+
+  
 
   const [todayCollection, setTodayCollection] = useState(0);
   const [monthCollection, setMonthCollection] = useState(0);
