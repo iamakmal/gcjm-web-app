@@ -17,6 +17,8 @@ const Area: NextPage = () => {
   const { data: areaData } = useGetAreaById(areaId as string);
   const { data: usersData, isLoading } = useGetUsersByArea(areaData?.areaCode);
 
+  
+
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
