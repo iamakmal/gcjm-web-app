@@ -9,11 +9,13 @@ import { firestore } from "@/config/firebase";
 import AnalyticsCard from "@/components/AnalyticsCard";
 import AreaCard from "@/components/AreaCard";
 import { AreaType } from "@/types/types";
-import {  NextPage } from "next";
+import {  GetServerSideProps, NextPage } from "next";
 import { useFirebase } from "@/contexts/firebaseContext";
 import { useRouter } from "next/router";
 import { FaUsers, FaMapMarkedAlt, FaMoneyBillWave } from "react-icons/fa";
 import { useEffect, useState } from "react";
+
+
 
 const fetchUsers = async () => {
   const usersCollection = collection(firestore, "users");
@@ -40,6 +42,8 @@ const Home: NextPage = () => {
 
   const { user, loading } = useFirebase();
   const router = useRouter();
+
+  
 
   const [todayCollection, setTodayCollection] = useState(0);
   const [monthCollection, setMonthCollection] = useState(0);
