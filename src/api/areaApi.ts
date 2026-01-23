@@ -71,6 +71,40 @@ export const useGetUserById = (userId: string) => {
   });
 };
 
+// Search user by ID (uid) or Reference Number (refNo)
+const searchUserByIdOrRefNo = async (searchTerm: string) => {
+  const userCollectionRef = collection(firestore, "users");
+  
+  // Try to find by uid first
+  const uidQuery = query(userCollectionRef, where("uid", "==", searchTerm));
+  const uidSnapshot = await getDocs(uidQuery);
+  
+  if (!uidSnapshot.empty) {
+    const doc = uidSnapshot.docs[0];
+    return { ...doc.data() } as UserType;
+  }
+  
+  // If not found by uid, try refNo
+  const refNoQuery = query(userCollectionRef, where("refNo", "==", searchTerm));
+  const refNoSnapshot = await getDocs(refNoQuery);
+  
+  if (!refNoSnapshot.empty) {
+    const doc = refNoSnapshot.docs[0];
+    return { ...doc.data() } as UserType;
+  }
+
+  throw new Error(`User with ID or Ref No "${searchTerm}" not found`);
+};
+
+export const useSearchUserByIdOrRefNo = (searchTerm: string) => {
+  return useQuery({
+    queryKey: ["user-search", searchTerm],
+    queryFn: () => searchUserByIdOrRefNo(searchTerm),
+    enabled: !!searchTerm && searchTerm.length > 0,
+    retry: false,
+  });
+};
+
 const getUsersByArea = async (areaId: string) => {
   const usersCollection = collection(firestore, "users");
   const userQuery = query(usersCollection, where("areaId", "==", areaId)); // Query for the `areaId`
@@ -265,6 +299,13 @@ export const addPayment = async (payment: PaymentType) => {
   return payment;
 };
 
+export const addBatchPayments = async (payments: PaymentType[]) => {
+  const paymentCollection = collection(firestore, "payments");
+  const promises = payments.map((payment) => addDoc(paymentCollection, payment));
+  await Promise.all(promises);
+  return payments;
+};
+
 export const useAddPayment = (onSuccess: () => void, onError: () => void) => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -274,6 +315,36 @@ export const useAddPayment = (onSuccess: () => void, onError: () => void) => {
       queryClient.invalidateQueries({
         queryKey: ["user-payment", payment.userId],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["area-payment", payment.areaId],
+      });
+      onSuccess();
+    },
+  });
+};
+
+export const useAddBatchPayments = (onSuccess: () => void, onError: () => void) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payments: PaymentType[]) => addBatchPayments(payments),
+    onError,
+    onSuccess: (payments: PaymentType[]) => {
+      // Invalidate queries for all affected users and areas
+      const userIds = [...new Set(payments.map((p) => p.userId))];
+      const areaIds = [...new Set(payments.map((p) => p.areaId))];
+      
+      userIds.forEach((userId) => {
+        queryClient.invalidateQueries({
+          queryKey: ["user-payment", userId],
+        });
+      });
+      
+      areaIds.forEach((areaId) => {
+        queryClient.invalidateQueries({
+          queryKey: ["area-payment", areaId],
+        });
+      });
+      
       onSuccess();
     },
   });
